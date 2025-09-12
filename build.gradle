@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    cucumberVersion = '7.18.1'
+    junitVersion = '5.10.2'
+    playwrightVersion = '1.47.0'
+    cucumberReportingVersion = '5.8.0'
+    testngVersion = '7.11.0'
+}
+
+dependencies {
+    testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumberVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    implementation "com.microsoft.playwright:playwright:${playwrightVersion}"
+    testImplementation "org.testng:testng:${testngVersion}"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
