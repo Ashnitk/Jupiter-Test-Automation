@@ -89,4 +89,16 @@ public class JupiterSteps {
         homePage.clickCartPage();
         cartPage = new CartPage(this.page);
     }
+
+    @And("I purchase {int} {string}")
+    public void purchaseProduct(int qty, String product) {
+    }
+
+    @Then("Validate price and subtotal for each product is correct")
+    public void validateSubtotalPrice() {
+    }
+
+    @And("Validate the total cost")
+    public void validateTotalCost() {
+    }
 }
