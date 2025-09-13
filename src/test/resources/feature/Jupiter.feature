@@ -1,23 +1,23 @@
 Feature: Automate testing of Jupiter Webpage
 
   Scenario: Validate Jupiter website contact page mandatory fields validation
-    Given I access the Jupiter website the "First" time
+    Given I access the Jupiter website
     When I navigate to the contact page
     And I click submit button
     Then Verify error messages are present
-    When I populate the mandatory fields
-    Then Validate the errors have disappeared
+    When I populate the mandatory fields for "John"
+    Then Validate the errors have disappeared for "John"
 
   Scenario Outline:
-    Given I access the Jupiter website the "<NumberOfAttempts>" time
+    Given I access the Jupiter website
     When I navigate to the contact page
-    And I populate the mandatory fields
-    Then Validate the errors have disappeared
+    And I populate the mandatory fields for "<Person>"
+    Then Validate the errors have disappeared for "<Person>"
 
     Examples:
-      | NumberOfAttempts |
-      | First              |
-      | Second             |
-      | Third              |
-      | Forth              |
-      | Fifth              |
+      | Person |
+      | Matt   |
+      | Andy   |
+      | Amy    |
+      | Frank  |
+      | Brad   |
