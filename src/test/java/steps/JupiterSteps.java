@@ -11,8 +11,10 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
 import org.testng.asserts.SoftAssert;
+import pages.CartPage;
 import pages.ContactPage;
 import pages.HomePage;
+import pages.ShopPage;
 import playwright.PlaywrightFactory;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
@@ -22,6 +24,8 @@ public class JupiterSteps {
     private final Page page = PlaywrightFactory.getPage();
     HomePage homePage;
     ContactPage contactPage;
+    ShopPage shopPage;
+    CartPage cartPage;
 
     @Given("I access the Jupiter website")
     public void accessJupiterURL() {
@@ -72,5 +76,17 @@ public class JupiterSteps {
         }
         softAssert.assertTrue(contactPage.getConfirmationMessage(personName).isVisible(), "Confirmation message not visible");
         softAssert.assertAll();
+    }
+
+    @When("I navigate to the shop page")
+    public void accessShopPage() {
+        homePage.clickShopPage();
+        shopPage = new ShopPage(this.page);
+    }
+
+    @When("I navigate to the cart page")
+    public void accessCartPage() {
+        homePage.clickCartPage();
+        cartPage = new CartPage(this.page);
     }
 }

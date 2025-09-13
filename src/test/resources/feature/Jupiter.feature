@@ -21,3 +21,13 @@ Feature: Automate testing of Jupiter Webpage
       | Amy    |
       | Frank  |
       | Brad   |
+
+  Scenario: Purchase items from the Jupiter website shopping site
+    Given I access the Jupiter website
+    When I navigate to the shop page
+    And I buy 2 "Stuffed Frog"
+    And I buy 5 "Fluffy Bunny"
+    And I buy 3 "Valentine Bear"
+    And I navigate to the cart page
+    Then Validate price and subtotal for each product is correct
+    And Validate the total cost
