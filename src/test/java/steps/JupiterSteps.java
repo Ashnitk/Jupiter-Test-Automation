@@ -16,6 +16,9 @@ import pages.ContactPage;
 import pages.HomePage;
 import pages.ShopPage;
 import playwright.PlaywrightFactory;
+import java.math.BigDecimal;
+import java.util.HashMap;
+
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class JupiterSteps {
@@ -26,6 +29,8 @@ public class JupiterSteps {
     ContactPage contactPage;
     ShopPage shopPage;
     CartPage cartPage;
+    int quantityTotal = 0;
+    HashMap<String, HashMap<String, Object>> purchaseOrder = new HashMap<>();
 
     @Given("I access the Jupiter website")
     public void accessJupiterURL() {
@@ -91,7 +96,24 @@ public class JupiterSteps {
     }
 
     @And("I purchase {int} {string}")
-    public void purchaseProduct(int qty, String product) {
+    public void purchaseProduct(int quantity, String product) {
+        HashMap<String, Object> purchase = new HashMap<>();
+        int cartTotal;
+        BigDecimal price = shopPage.getProductPrice(product);
+        quantityTotal += quantity;
+
+        for (int i = 0; i < quantity; i++) {
+            shopPage.purchaseProduct(product);
+        }
+
+        purchase.put("Quantity", quantity);
+        purchase.put("Price", price);
+        purchaseOrder.put(product,purchase);
+
+        cartTotal = Integer.parseInt(shopPage.CART_TOTAL.textContent());
+        SoftAssert softAssert = new SoftAssert();
+        softAssert.assertEquals(cartTotal, quantityTotal, "Cart total has not updated");
+        softAssert.assertAll();
     }
 
     @Then("Validate price and subtotal for each product is correct")
