@@ -17,7 +17,9 @@ import pages.HomePage;
 import pages.ShopPage;
 import playwright.PlaywrightFactory;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
@@ -31,6 +33,7 @@ public class JupiterSteps {
     CartPage cartPage;
     int quantityTotal = 0;
     HashMap<String, HashMap<String, Object>> purchaseOrder = new HashMap<>();
+    BigDecimal totalOrderAmount = new BigDecimal("0.00");
 
     @Given("I access the Jupiter website")
     public void accessJupiterURL() {
@@ -108,6 +111,7 @@ public class JupiterSteps {
 
         purchase.put("Quantity", quantity);
         purchase.put("Price", price);
+        purchase.put("Subtotal", price.multiply(BigDecimal.valueOf(quantity)));
         purchaseOrder.put(product,purchase);
 
         cartTotal = Integer.parseInt(shopPage.CART_TOTAL.textContent());
@@ -118,9 +122,29 @@ public class JupiterSteps {
 
     @Then("Validate price and subtotal for each product is correct")
     public void validateSubtotalPrice() {
+        SoftAssert softAssert = new SoftAssert();
+        Locator table = cartPage.CART_TABLE;
+        table.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        List<Locator> cartRows = table.locator("tbody tr").all();
+        softAssert.assertEquals(cartRows.size(), purchaseOrder.size(), "Total items in cart is incorrect");
+        for (Locator rows : cartRows) {
+            List<Locator> rowCells = rows.locator("td").all();
+            String product = rowCells.getFirst().textContent().strip();
+            BigDecimal webUnitPrice = new BigDecimal(rowCells.get(1).textContent().replace("$", ""));
+            BigDecimal webSubtotalPrice = new BigDecimal(rowCells.get(3).textContent().replace("$", ""));
+            softAssert.assertEquals(webUnitPrice, purchaseOrder.get(product).get("Price"), "Unit price is incorrect for " + product);
+            softAssert.assertEquals(webSubtotalPrice, purchaseOrder.get(product).get("Subtotal"), "Subtotal price is incorrect for " + product);
+            totalOrderAmount = totalOrderAmount.add(new BigDecimal(rowCells.get(3).textContent().replace("$", "")));
+        }
+        softAssert.assertAll();
     }
 
     @And("Validate the total cost")
     public void validateTotalCost() {
+        SoftAssert softAssert = new SoftAssert();
+        BigDecimal webpageTotalOrderAmount = new BigDecimal(cartPage.TOTAL.textContent().replaceAll("[^\\d.]", ""));
+        BigDecimal webpageTotalOrderAmountRounder = webpageTotalOrderAmount.setScale(2, RoundingMode.HALF_UP);
+        softAssert.assertEquals(webpageTotalOrderAmountRounder, totalOrderAmount, "Unit price is incorrect");
+        softAssert.assertAll();
     }
 }
