@@ -10,7 +10,6 @@ public class HomePage {
     public HomePage(Page page){
         this.page = page;
         this.WELCOME_MESSAGE = page.getByText("Welcome to Jupiter Toys");
-
     }
 
     public void clickContactPage() {
